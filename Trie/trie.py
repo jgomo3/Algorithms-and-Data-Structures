@@ -1,29 +1,27 @@
-endOfWord = "$"
+#!/usr/bin/env python3
 
-def generateTrieFromWordsArray(words):
-	root = {}
-	for word in words:
-		currentDict = root
-		for letter in word:
-			currentDict = currentDict.setdefault(letter, {})
-		currentDict[endOfWord] = endOfWord
-	return root
+class Trie:
+    def __init__(self, words):
+        self._root = {}
+        for word in words:
+            self._add_word(self._root, word)
 
-def isWordPresentInTrie(trie, word):
-	currentDict = trie
-	for letter in word:
-		if letter in currentDict:
-			currentDict = currentDict[letter]
-		else: 
-			return False
-	if endOfWord in currentDict:
-		return True
-	else: 
-		return False 
+    def _add_word(self, root, word):
+        if word:
+            descendent = root.setdefault(word[0], {})
+            self._add_word(descendent, word[1:])
 
+    def _contains(self, root, word):
+        return \
+            not word \
+            or word[0] in root \
+            and self._contains(root[word[0]], word[1:])
 
-arrayOfWords = ['hello', 'hey', 'what', 'when', 'why']
-wordsTrie = generateTrieFromWordsArray(arrayOfWords)
- print wordsTrie
- print isWordPresentInTrie(wordsTrie, 'hello')
- print isWordPresentInTrie(wordsTrie, 'hellow')
+    def __contains__(self, word):
+        return self._contains(self._root, word)
+
+if __name__ == '__main__':
+    words = ['hello', 'hey', 'what', 'when', 'why']
+    trie = Trie(words)
+    print('Is "hello" in "words"? {}'.format('hello' in trie))
+    print('Is "hellow" in "words"? {}'.format('hellow' in trie))
