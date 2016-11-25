@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-
 class Trie:
-    def __init__(self, words):
+    def __init__(self, words, end_of_word=''):
         self._root = {}
+        self._EOW = end_of_word
         for word in words:
             self._add_word(self._root, word)
 
@@ -10,11 +9,13 @@ class Trie:
         if word:
             descendent = root.setdefault(word[0], {})
             self._add_word(descendent, word[1:])
+        else:
+            root[self._EOW] = self._EOW
 
     def _contains(self, root, word):
         return \
-            not word \
-            or word[0] in root \
+            not word and self._EOW in root \
+            or word and word[0] in root \
             and self._contains(root[word[0]], word[1:])
 
     def __contains__(self, word):
@@ -23,5 +24,7 @@ class Trie:
 if __name__ == '__main__':
     words = ['hello', 'hey', 'what', 'when', 'why']
     trie = Trie(words)
-    print('Is "hello" in "words"? {}'.format('hello' in trie))
-    print('Is "hellow" in "words"? {}'.format('hellow' in trie))
+    assert 'hello' in trie, '"hello" should be in the Trie'
+    assert 'hellow' not in trie, '"hellow" shouldn\'t be in the Trie'
+    assert 'hel' not in trie, '"hel" shouldn\'t be in the Trie'
+    assert '' not in trie, '"" shouldn\'t be in the Trie'
